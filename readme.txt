@@ -5,3 +5,4 @@ Creating a new branch is quick and simple.
 分支管理策略
 Bug分支 stash
 推送开发分支上去试试
+git sublime推送测试
