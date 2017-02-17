@@ -6,3 +6,4 @@ Creating a new branch is quick and simple.
 Bug分支 stash
 推送开发分支上去试试
 git sublime推送测试
+Github上更改测试
