@@ -1,0 +1,1 @@
+mongos --port 1000 --configdb 127.0.0.1:2000

@@ -1,0 +1,17 @@
+use admin
+db.runCommand({"replSetInitiate":
+   {
+      "_id":'child',
+       "members":[{
+	        "_id":1,
+		"host":"127.0.0.1:1111"
+	    },{
+		"_id":2,
+		"host":"127.0.0.1:2222"
+	    },{
+		"_id":3,
+		"host":"127.0.0.1:3333"
+	    }]
+    }
+})
+rs.status()

@@ -1,0 +1,1 @@
+mongod --config split02.conf

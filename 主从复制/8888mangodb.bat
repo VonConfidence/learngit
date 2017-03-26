@@ -1,0 +1,1 @@
+mongod --config 8888.conf

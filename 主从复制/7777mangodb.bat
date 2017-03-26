@@ -1,0 +1,1 @@
+mongod --config 7777.conf
