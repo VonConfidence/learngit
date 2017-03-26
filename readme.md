@@ -7,4 +7,4 @@
 	Bug分支 stash
 
 ## mongodb nodejs
-	mongoose
+	mongoose(Model Schema)
