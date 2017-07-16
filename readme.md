@@ -1,14 +1,14 @@
 ## 安装和配置
-    + cd C:\Program Files\MongoDB 2.6 Standard\bin
-    + mongod --dbpath D:\software\MongoDBDATA #数据的存储路径
-    + 配置环境变量:  
-        C:\Program Files\MongoDB 2.6 Standard\bin配置到path下面(jdk类似)
-    + 启动数据库服务  
-        批处理文件 mongod --dbpath D:\software\MongoDBDATA
-    + 启动监听端口号27017
-        mongo 127.0.0.1:27017/admin
-    + 启动数据库配置的服务文件  
-          mongod.exe --logpath "C:\data\dbConf\mongodb.log" --logappend --dbpath "C:\data\db" --serviceName "mongo" --serviceDisplayName "mongodb" --install
++ cd C:\Program Files\MongoDB 2.6 Standard\bin
++ mongod --dbpath D:\software\MongoDBDATA #数据的存储路径
++ 配置环境变量:  
+      C:\Program Files\MongoDB 2.6 Standard\bin配置到path下面(jdk类似)
++ 启动数据库服务  
+      批处理文件 mongod --dbpath D:\software\MongoDBDATA
++ 启动监听端口号27017
+      mongo 127.0.0.1:27017/admin
++ 启动数据库配置的服务文件  
+      mongod.exe --logpath "C:\data\dbConf\mongodb.log" --logappend --dbpath "C:\data\db" --serviceName "mongo" --serviceDisplayName "mongodb" --install
 
 ----------------
 # 第一讲: 使用和创建数据库
