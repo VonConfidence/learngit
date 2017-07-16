@@ -98,99 +98,107 @@
 # 第二讲:Document操作
 
 ## document的插入操作---
-  1,插入文档
+1. 插入文档  
+    
+    ```
     dn.[documentName].insert({});
-      db.persons.insert({_id:"001",name:"CDT"})
-  2,批量插入文档
-    shell这样执行是错误的db.[documentName].insert([{},{},{}])
-    shell不支持批量插入
-    想完成批量插入的话,可以使用mongo的应用驱动或是shell的for循环
+    db.persons.insert({_id:"001",name:"CDT"})
+    ```
+
+2. 批量插入文档  
+    + shell这样执行是错误的db.[documentName].insert([{},{},{}])
+    + shell不支持批量插入
+    + 想完成批量插入的话,可以使用mongo的应用驱动或是shell的for循环
+    
+    ```
     for (var i  = 0; i < 10; i ++)
     {
       db.persons.insert({name:i});
     }
-  3,save操作
-    save操作和inset操作区别在于当遇到_id相同的情况下,
-      save会完成保存操作对数据进行更新操作,insert则会报错
+    ```
+
+3. save操作  
+  save操作和inset操作区别在于当遇到_id相同的情况下,  
+    save会完成保存操作对数据进行更新操作,insert则会报错  
 
 
 ## document的删除操作---
-  1,删除列表中的所有数据
-    db.[documentName].remove() 集合的本身和索引不会被删除
-  2,根据条件进行删除
-    删除集合documentName中的name等于upscat的记录
-      db.[documentName].remove({name:"upscat"})
-      db.persons.remove({_id:1})
-  3,小技巧
-    如果你想删除一个数据量十分庞大的集合,直接删除该集合并且重新建立索引的办法比直接用remove的效率高很多
+1. 删除列表中的所有数据  
+  db.[documentName].remove() 集合的本身和索引不会被删除
+2. 根据条件进行删除
+  删除集合documentName中的name等于upscat的记录  
+    db.[documentName].remove({name:"upscat"})
+    db.persons.remove({_id:1})
+3. 小技巧  
+  如果你想删除一个数据量十分庞大的集合,直接删除该集合并且重新建立索引的办法比直接用remove的效率高很多
 
 ## document的更新操作---
-  1,强硬的文档替换式更新操作
-    db.[documentName].update({查询器},{修改器})
-    db.persons.update({name:"yfc"},{age:25}); //第一个是查询器 第二个是修改器
-    强硬的更新会用新的文档代替老的文档
-  2,主键冲突的时候报错并且停止更新操作
-    db.persons.update({_id:2},{_id:1,age:22})
-    因为_id为1的已经存在 所以会报错
-    因为是强制替换当替换的文档和已有的文档ID冲突的时候则系统回报错
-  3,insertOrUpdate操作
-    目的:查询器查的出来数据就执行更新操作,查不出来就执行替换操作
-    用法:db.[documentName].update({查询器},{修改器},true)
-  4,批量更新操作
-    update只修改第一个符合条件的数据项 批量更新必须使用$set修改器
-    db.persons.update({name:"3"},{$set:{name:"33"}},false,true)
+1. 强硬的文档替换式更新操作
+  db.[documentName].update({查询器},{修改器})
+  db.persons.update({name:"yfc"},{age:25}); //第一个是查询器 第二个是修改器
+  强硬的更新会用新的文档代替老的文档
+2. 主键冲突的时候报错并且停止更新操作
+  db.persons.update({_id:2},{_id:1,age:22})
+  因为_id为1的已经存在 所以会报错
+  因为是强制替换当替换的文档和已有的文档ID冲突的时候则系统回报错
+3. insertOrUpdate操作
+  目的:查询器查的出来数据就执行更新操作,查不出来就执行替换操作
+  用法:db.[documentName].update({查询器},{修改器},true)
+4. 批量更新操作
+  update只修改第一个符合条件的数据项 批量更新必须使用$set修改器
+  db.persons.update({name:"3"},{$set:{name:"33"}},false,true)
 
-    第三个参数false表示不insert, 第四个参数表示批量修改
+  第三个参数false表示不insert, 第四个参数表示批量修改
 
-    默认情况下当查询器查询出多条数据的时候默认修改第一条数据
-    db.[documentName].update({查询器},{$set:{修改器}},false,true)}
-  5,使用修改器来完成局部更新操作
-    $set    {$set:{field:value}}  {$set:{name:"fengzixin"}}
-      执行一个键值对,如果存在就进行修改,不存在就添加
-      db.persons.update({name:"chen"},{$set:{name:"cdt"}})
-    $inc    {$inc:{field:value}}  {$inc:{"count":1}}
-      只能使用与数字类型,也可以为指定的键对应的数字类型的数值进行加减操作
-      db.persons.update({age:27},{$inc:{age:1}}) 自动将年龄加1
-    $unset  {$unset:{field:1}}    {$unset:{"name":1}}
-      删除指定的键
-      db.persons.update({age:27},{$unset:{age:1}})
-    $push {$push:{field:value}}  {$push:{books:"JS"}}
-      1,如果指定的键是数组 增追加新的数值
-        db.persons.insert({_id:5,name:'fzx',books:[]})
-        db.persons.update({_id:5},{$push:{books:"js"}}) 追加
-        db.persons.update({_id:5},{$push:{books:"extjs"}}) 追加
-      2,如果指定的键不是数组则中断当前的操作Cann't apply $push /no array
-        db.persons.update({_id:5},{$push:{name:"fff"}}) 报错 name不是数组
-      3,如果不存在指定的键则创建数组类型的键值对
-        db.persons.update({_id:5},{$push:{classes:"class01"}}) 创建追加
-    $pushAll  {$pushAll:{field:array}}   {$push:{books:["Extjs","JS"]}
-      用法和$push相似 可以批量添加数组数据
-      db.persons.update({_id:5},{$pushAll:{classes:["01","02","03","04"]}})
-    $addToSet  {$addToSet:{field:value}}   {$addToSet:{books:"JS"}}
-      目标数组存在此项 则不进行操作 不存在则添加进去
-      db.persons.insert({_id:6,books:["js"]})
-      db.persons.update({_id:6},{$addToSet:{books:"js"}})//已经有js不会追加
-      db.persons.update({_id:6},{$addToSet:{books:"extjs"}})//没有extjs会追加
-    $pop      {$pop:{field:value}}     {$pop:{name:1}}  {$pop:{name:-1}}
-      从指定的数组中删除一个值 1删除最后一个数值 -1删除第一个值
-      db.persons.update({_id:6},{$pop:{books:-1}}) //删除books的第一个值
-    $pull    {$pull:{field:value}}     {$pull:{books:"js"}}
-      db.persons.update({_id:6},{$pull:{books:"js"}}) //删除books中指定的值
-      删除一个指定的数值
-    $pullAll  {$pullAll:{field:array}}     {$pullAll:{books:["js","mongodb"]}
-      db.persons.update({_id:6},{$pullAll:{books:["extjs","js"]}})
-      一次性删除多个指定的值
+  默认情况下当查询器查询出多条数据的时候默认修改第一条数据
+  db.[documentName].update({查询器},{$set:{修改器}},false,true)}
+5. 使用修改器来完成局部更新操作
+    + $set    {$set:{field:value}}  {$set:{name:"fengzixin"}}
+        执行一个键值对,如果存在就进行修改,不存在就添加
+        db.persons.update({name:"chen"},{$set:{name:"cdt"}})
+    + $inc    {$inc:{field:value}}  {$inc:{"count":1}}
+        只能使用与数字类型,也可以为指定的键对应的数字类型的数值进行加减操作
+        db.persons.update({age:27},{$inc:{age:1}}) 自动将年龄加1
+    + $unset  {$unset:{field:1}}    {$unset:{"name":1}}
+       删除指定的键
+        db.persons.update({age:27},{$unset:{age:1}})
+    + $push {$push:{field:value}}  {$push:{books:"JS"}}
+        1. 如果指定的键是数组 增追加新的数值
+            - db.persons.insert({_id:5,name:'fzx',books:[]})
+            - db.persons.update({_id:5},{$push:{books:"js"}}) 追加
+            - db.persons.update({_id:5},{$push:{books:"extjs"}}) 追加
+        2. 如果指定的键不是数组则中断当前的操作Cann't apply $push /no array
+            - db.persons.update({_id:5},{$push:{name:"fff"}}) 报错 name不是数组
+        3. 如果不存在指定的键则创建数组类型的键值对
+           - db.persons.update({_id:5},{$push:{classes:"class01"}}) 创建追加
+    + $pushAll  {$pushAll:{field:array}}   {$push:{books:["Extjs","JS"]}
+        用法和$push相似 可以批量添加数组数据
+        db.persons.update({_id:5},{$pushAll:{classes:["01","02","03","04"]}})
+    + $addToSet  {$addToSet:{field:value}}   {$addToSet:{books:"JS"}}
+        目标数组存在此项 则不进行操作 不存在则添加进去
+        db.persons.insert({_id:6,books:["js"]})
+        db.persons.update({_id:6},{$addToSet:{books:"js"}})//已经有js不会追加
+        db.persons.update({_id:6},{$addToSet:{books:"extjs"}})//没有extjs会追加
+    + $pop      {$pop:{field:value}}     {$pop:{name:1}}  {$pop:{name:-1}}
+        从指定的数组中删除一个值 1删除最后一个数值 -1删除第一个值
+        db.persons.update({_id:6},{$pop:{books:-1}}) //删除books的第一个值
+    + $pull    {$pull:{field:value}}     {$pull:{books:"js"}}
+        db.persons.update({_id:6},{$pull:{books:"js"}}) //删除books中指定的值
+        删除一个指定的数值
+    + $pullAll  {$pullAll:{field:array}}     {$pullAll:{books:["js","mongodb"]}
+          db.persons.update({_id:6},{$pullAll:{books:["extjs","js"]}})
+          一次性删除多个指定的值
 
-    $ {$push:{field:value}} {$push:{books:"JS"}}
-      1,数组定位器,如果数组中有多个数值,我们相对其中的一部分进行操作我们就要用到定位器($) 例如:
-        有文档{name:"YFC",age:27,books:[{type:'js',name:'extjs'},{type:"js",name:"jquery"},{type:"js",name:"mongodb"}]}
-      我们要把type等于js的文档增加一个相同的作者author是fzx
-      方法: db.text.update({"books.type":"js"},{$set:{"books.$.author":"fzx"}})
+  $ {$push:{field:value}} {$push:{books:"JS"}}
+    1,数组定位器,如果数组中有多个数值,我们相对其中的一部分进行操作我们就要用到定位器($) 例如:
+      有文档{name:"YFC",age:27,books:[{type:'js',name:'extjs'},{type:"js",name:"jquery"},{type:"js",name:"mongodb"}]}
+    我们要把type等于js的文档增加一个相同的作者author是fzx
+    方法: db.text.update({"books.type":"js"},{$set:{"books.$.author":"fzx"}})
 
-      db.persons.insert({_id:7,books:[{type:"js",name:"jquery"},{type:"js",name:"jquery"},{type:"js",name:"mongodb"}]})
-      db.persons.update({"books.type":"js"},{$set:{"books.$.author":"fzx"}})
-      //碰到有.引用的地方一定要打双引号""  只修改第一个满足条件的
-    切记: 修改器是被放到最前面的,后面学的查询器是要放到内层的
+    db.persons.insert({_id:7,books:[{type:"js",name:"jquery"},{type:"js",name:"jquery"},{type:"js",name:"mongodb"}]})
+    db.persons.update({"books.type":"js"},{$set:{"books.$.author":"fzx"}})
+    //碰到有.引用的地方一定要打双引号""  只修改第一个满足条件的
+  切记: 修改器是被放到最前面的,后面学的查询器是要放到内层的
 
   6,$addToSet与$each结合完成批量数据更新
     db.text.update({_id:1000},{$addToSet:{books:{$each:["js","db"]}}})
